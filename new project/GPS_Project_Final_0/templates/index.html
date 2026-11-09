@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Live GPS tracking, location history, and geofence dashboard.">
+    <title>GPS Tracking Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <a href="/" aria-label="GPS Tracker home">GPS Tracker</a>
+        <span id="server" aria-live="polite">Checking API...</span>
+    </header>
+
+    <main>
+        <section class="page-heading" aria-labelledby="page-title">
+            <h1 id="page-title">GPS Tracking Dashboard</h1>
+            <p>Real-time XIAO ESP32-C3 location, history, and geofencing</p>
+        </section>
+
+        <section class="stats" aria-label="Current GPS data">
+            <div>
+                <span>Latitude</span>
+                <strong id="lat">--</strong>
+            </div>
+            <div>
+                <span>Longitude</span>
+                <strong id="lon">--</strong>
+            </div>
+            <div>
+                <span>Speed</span>
+                <strong><span id="speed">--</span> km/h</strong>
+            </div>
+            <div>
+                <span>Satellites</span>
+                <strong id="sats">--</strong>
+            </div>
+            <div>
+                <span>HDOP</span>
+                <strong id="hdop">--</strong>
+            </div>
+            <div>
+                <span>Device</span>
+                <strong id="device_id">--</strong>
+            </div>
+            <div>
+                <span>GPS status</span>
+                <strong id="gps-status" aria-live="polite">Waiting for GPS data...</strong>
+            </div>
+            <div>
+                <span>Geofence</span>
+                <strong id="geofence-status" aria-live="polite">Checking...</strong>
+            </div>
+            <div>
+                <span>Nearest geofence</span>
+                <strong id="distance">--</strong>
+            </div>
+        </section>
+
+        <section class="panel" aria-labelledby="map-title">
+            <div class="panel-heading">
+                <h2 id="map-title">Live Map</h2>
+                <small id="updated" aria-live="polite">Waiting for GPS data</small>
+            </div>
+            <div
+                id="map"
+                style="height: 500px; width: 100%;"
+                role="application"
+                aria-label="Map showing current GPS location and geofences"
+            ></div>
+        </section>
+
+        <section class="cols" aria-label="Geofences and location history">
+            <section class="panel" aria-labelledby="geofence-title">
+                <h2 id="geofence-title">Geofence / Safe Zone</h2>
+                <form id="form">
+                    <label for="name">Name</label>
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        value="Home Safe Zone"
+                        maxlength="80"
+                        required
+                    >
+
+                    <label for="flat">Latitude</label>
+                    <input
+                        id="flat"
+                        name="latitude"
+                        type="number"
+                        step="any"
+                        min="-90"
+                        max="90"
+                        required
+                    >
+
+                    <label for="flon">Longitude</label>
+                    <input
+                        id="flon"
+                        name="longitude"
+                        type="number"
+                        step="any"
+                        min="-180"
+                        max="180"
+                        required
+                    >
+
+                    <label for="radius">Radius (meters)</label>
+                    <input
+                        id="radius"
+                        name="radius_m"
+                        type="number"
+                        value="100"
+                        min="5"
+                        max="100000"
+                        required
+                    >
+
+                    <button type="submit">Add Safe Zone</button>
+                    <small id="msg" aria-live="polite"></small>
+                </form>
+                <div id="fences" aria-live="polite"></div>
+            </section>
+
+            <section class="panel" aria-labelledby="history-title">
+                <div class="panel-heading">
+                    <h2 id="history-title">Recent Location History</h2>
+                    <button id="refresh" type="button">Refresh</button>
+                </div>
+                <div class="table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Time</th>
+                                <th scope="col">Latitude</th>
+                                <th scope="col">Longitude</th>
+                                <th scope="col">Speed</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history">
+                            <tr>
+                                <td colspan="4">Loading location history...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""
+    ></script>
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>
